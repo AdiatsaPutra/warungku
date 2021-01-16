@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:warungku/login_status.dart';
 
 void main() => runApp(MyApp());
@@ -45,12 +46,36 @@ class _LoginPageState extends State<LoginPage> {
     if (value == 1) {
       setState(() {
         loginStatus = LoginStatus.loggedIn;
+        // safePref
+        safePref(value);
       });
       print(message);
     } else {
       print(message);
     }
     print(data);
+  }
+
+  safePref(int value) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      sharedPreferences.setInt("value", value);
+    });
+  }
+
+  var value;
+  getPref() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      value = sharedPreferences.getInt("value");
+      loginStatus = value == 1 ? LoginStatus.loggedIn : LoginStatus.notLoggedIn;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getPref();
   }
 
   @override
