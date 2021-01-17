@@ -72,6 +72,14 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  signOut() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      sharedPreferences.setInt("value", null);
+      loginStatus = LoginStatus.notLoggedIn;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -118,18 +126,40 @@ class _LoginPageState extends State<LoginPage> {
         );
         break;
       case LoginStatus.loggedIn:
-        return MainMenu();
+        return MainMenu(signOut);
         break;
     }
   }
 }
 
-class MainMenu extends StatelessWidget {
+class MainMenu extends StatefulWidget {
+  final VoidCallback signOut;
+
+  MainMenu(this.signOut);
+
+  @override
+  _MainMenuState createState() => _MainMenuState();
+}
+
+class _MainMenuState extends State<MainMenu> {
+  signOut() {
+    setState(() {
+      widget.signOut();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Menu Utama'),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.lock_open),
+              onPressed: () {
+                signOut();
+              })
+        ],
       ),
     );
   }
